@@ -1,7 +1,7 @@
 export default function AxiosInterceptorsRequest(api: any, token?: any) {
   api.interceptors.request.use(
     async (config: any) => {
-      const token = localStorage.getItem("@sipavAccessToken");
+      const token = localStorage.getItem("@talphaToken");
 
       if (token) {
         config.headers = {

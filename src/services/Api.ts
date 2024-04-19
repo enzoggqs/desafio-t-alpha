@@ -4,9 +4,12 @@ import axiosInterceptorsRequest from "../config/AxiosInterceptorsRequest";
 
 const api = axios.create({
   baseURL: "https://interview.t-alpha.com.br/",
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
-axiosInterceptorsRequest(api);
-axiosInterceptorsResponse(api);
+// axiosInterceptorsRequest(api);
+// axiosInterceptorsResponse(api);
 
 export default api;
