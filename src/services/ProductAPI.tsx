@@ -71,18 +71,18 @@ const ProductAPI = () => {
                 throw new Error('Authorization token not found');
             }
             
-            const createProductUrl = `https://interview.t-alpha.com.br/api/products/update-product/${id}`;
+            const updateProductUrl = `https://interview.t-alpha.com.br/api/products/update-product/${id}`;
     
             const requestOptions = {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json', // Especificar o tipo de conteúdo como JSON
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(data),
             };
     
-            const response = await fetch(createProductUrl, requestOptions);
+            const response = await fetch(updateProductUrl, requestOptions);
     
             if (!response.ok) {
                 throw new Error(`Failed to create product: ${response.status} ${response.statusText}`);
@@ -97,7 +97,39 @@ const ProductAPI = () => {
         }
     };
 
-    return {getAllProducts, createProduct, updateProduct}
+    const deleteProduct = async (id: number) => {
+        try {
+            const token = localStorage.getItem('@talphaToken');
+
+            if (!token) {
+                throw new Error('Authorization token not found');
+            }
+            
+            const deleteProductUrl = `https://interview.t-alpha.com.br/api/products/delete-product/${id}`;
+    
+            const requestOptions = {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+    
+            const response = await fetch(deleteProductUrl, requestOptions);
+    
+            if (!response.ok) {
+                throw new Error(`Failed to delete product: ${response.status} ${response.statusText}`);
+            }
+    
+            const responseData = await response.json();
+        
+            return responseData;
+        } catch (error: any) {
+            console.error('Delete product error:', error.message);
+            throw error;
+        }
+    };
+
+    return {getAllProducts, createProduct, updateProduct, deleteProduct}
 }
 
 export default ProductAPI

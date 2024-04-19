@@ -1,7 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react';
-import React from 'react'
 
-const CustomBox = ({text, rightImage}) => {
+const CustomBox = ({text, firstImage, secondImage}) => {
   return (
     <Flex 
         width="100%"
@@ -17,13 +16,15 @@ const CustomBox = ({text, rightImage}) => {
         <Text 
             fontSize="md" 
             fontWeight="semibold" 
-            color="primary.600"
-
+            color="primary.500"
             px="10px"
         >
             {text}
         </Text>
-        {rightImage}
+        <Flex gap={3}>
+          {firstImage}
+          {secondImage}
+        </Flex>
     </Flex>
   )
 }

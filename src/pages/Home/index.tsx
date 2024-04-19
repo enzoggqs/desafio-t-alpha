@@ -2,7 +2,7 @@ import { CalendarIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, ModalBody, ModalCloseButton, ModalHeader, Text, Tooltip } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { BiNews, BiSolidEdit, BiUserCircle } from 'react-icons/bi';
+import { BiNews, BiSolidEdit, BiSolidTrash, BiUserCircle } from 'react-icons/bi';
 import { GoArrowLeft } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from "yup";
@@ -24,6 +24,7 @@ const Home = () => {
   const finalRef = useRef();
   const [isOpenEditModal, setIsOpenEditModal] = React.useState(false);
   const [isOpenAddModal, setIsOpenAddModal] = React.useState(false);
+  const [isOpenDeleteModal, setIsOpenDeleteModal] = React.useState(false);
   const [currentEditProduct, setCurrentEditProduct] = React.useState<number>();
   const [products, setProducts] = useState<IProduct[]>([])
   const [initialValuesEdit, setInitialValuesEdit] = React.useState<IProduct>(
@@ -35,23 +36,23 @@ const Home = () => {
     }
   )
 
-  const { getAllProducts, createProduct, updateProduct } = ProductAPI();
+  const { getAllProducts, createProduct, updateProduct, deleteProduct } = ProductAPI();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(localStorage.getItem('@talphaToken') === null){
+    if (localStorage.getItem('@talphaToken') === null) {
       navigate("/login")
     } else {
       const fetchProducts = async () => {
         try {
           const productsData = await getAllProducts();
-  
+
           setProducts(productsData.data);
         } catch (error: any) {
           console.error('Failed to fetch products:', error.message);
         }
       };
-  
+
       fetchProducts();
     }
 
@@ -72,6 +73,15 @@ const Home = () => {
     setIsOpenEditModal(false);
   };
 
+  const handleOpenDeleteModal = (product: IProduct) => {
+    setCurrentEditProduct(product.id);
+    setIsOpenDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsOpenDeleteModal(false);
+  };
+
   const handleOpenAddModal = () => {
     setIsOpenAddModal(true);
   };
@@ -90,10 +100,21 @@ const Home = () => {
   };
 
   async function editProduct(data: IProduct) {
-    console.log(currentEditProduct, data)
-    if(typeof(currentEditProduct) == 'number'){
+    if (typeof (currentEditProduct) == 'number') {
       try {
         await updateProduct(data, currentEditProduct);
+        navigate(0);
+      } catch (error: any) {
+        console.error('Failed to create product:', error.message);
+      }
+    }
+  };
+
+  async function removeProduct() {
+    console.log(currentEditProduct)
+    if (typeof (currentEditProduct) == 'number') {
+      try {
+        await deleteProduct(currentEditProduct);
         navigate(0);
       } catch (error: any) {
         console.error('Failed to create product:', error.message);
@@ -182,12 +203,20 @@ const Home = () => {
           <CustomBox
             key={index}
             text={product.name}
-            rightImage={
+            firstImage={
               <BiSolidEdit
-                size={40}
-                color='#088395'
+                size={35}
+                color='#01875f'
                 cursor={"pointer"}
                 onClick={() => handleOpenEditModal(product)}
+              />
+            }
+            secondImage={
+              <BiSolidTrash
+                size={35}
+                color='#01875f'
+                cursor={"pointer"}
+                onClick={() => handleOpenDeleteModal(product)}
               />
             }
           />
@@ -344,7 +373,7 @@ const Home = () => {
                     label="Você precisa alterar alguma informação"
                     placement="top"
                     hasArrow
-                    isOpen={dirty ? false : undefined} // Oculta o tooltip se o botão estiver "dirty"
+                    isOpen={dirty ? false : undefined}
                   >
                     Salvar
                   </Tooltip>
@@ -479,10 +508,6 @@ const Home = () => {
                   marginTop="1rem"
                   backgroundColor="transparent"
                   transition="background-color 0.3s, color 0.3s"
-                  // _hover={(isValid && dirty) ? {
-                  //   backgroundColor: "primary.500",
-                  //   color: "#F0F1F3",
-                  // } : ''}
                   mb="1rem"
                   fontSize="2xl"
                 >
@@ -498,6 +523,59 @@ const Home = () => {
               </Flex>
             )}
           </Formik>
+        </ModalBody>
+      </CustomModal>
+      {/* Modal de Deleção */}
+      <CustomModal
+        isOpen={isOpenDeleteModal}
+        onClose={handleCloseDeleteModal}
+        initialRef={initialRef}
+        finalRef={finalRef}
+      >
+        <ModalHeader>
+          <Text
+            fontSize="2xl"
+            color="primary.500"
+            fontWeight="semibold"
+            pb=".5rem"
+          >
+            Deletar Produto
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+              <Flex
+                width="100%"
+                flexDirection="column"
+                alignItems="center"
+              >
+                <Text
+                  fontSize="xl"
+                  fontWeight="normal"
+                  pb=".5rem"
+                >
+                  Tem certeza que deseja excluir o produto {currentEditProduct !== undefined && products ? products.find(product => product.id === currentEditProduct)?.name : ""}
+                </Text>
+                <Flex
+                  width="100%"
+                  flexDirection="row"
+                  alignItems="center"
+                  justifyContent={"center"}
+                  py={"1rem"}
+                  gap={"3rem"}
+                >
+                  <Button
+                    onClick={() => removeProduct()}
+                  >
+                    Sim
+                  </Button>
+                  <Button
+                    onClick={() => handleCloseDeleteModal()}
+                  >
+                    Não
+                  </Button>
+                </Flex>
+              </Flex>
         </ModalBody>
       </CustomModal>
     </Flex>
