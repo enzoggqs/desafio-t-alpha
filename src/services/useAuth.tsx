@@ -52,13 +52,15 @@ const useAuth = () => {
         };
 
         const response = await fetch(registerUrl, requestOptions);
-
+        
         if (!response.ok) {
           throw new Error(`Failed to login: ${response.status} ${response.statusText}`);
         }
-
+        
         const responseData = await response.json();
+        const { token } = responseData.data;
 
+        localStorage.setItem('@talphaToken', token);
         navigate(PathRoutes.HOME, {
             replace: true,
         });
