@@ -1,13 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
 import PathRoutes from '../routes/PathRoutes';
 
 const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
-  useEffect(() => {
-    setIsAuthenticated(localStorage.getItem('@talphaToken') !== null);
-  }, []);
-
   const register = async (data: any, navigate:any) => {
     try {
         const registerUrl = 'https://interview.t-alpha.com.br/api/auth/register';
@@ -72,10 +65,15 @@ const useAuth = () => {
     }
   };
 
+  const signOut = () => {
+    localStorage.removeItem('@talphaToken');
+    window.location.href = PathRoutes.LOGIN;
+  };
+
   return {
-    isAuthenticated,
     register,
     signIn,
+    signOut,
   };
 };
 

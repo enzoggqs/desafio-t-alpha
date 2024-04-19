@@ -15,8 +15,8 @@ interface IProduct {
   id?: number;
   name: string;
   description?: string;
-  price: number | undefined;
-  stock: number | undefined;
+  price: number;
+  stock: number;
 }
 
 const Home = () => {
@@ -30,28 +30,32 @@ const Home = () => {
     {
       name: '',
       description: '',
-      price: undefined,
-      stock: undefined
+      price: 0,
+      stock: 0
     }
   )
 
-  const { getAllProducts, createProduct } = ProductAPI();
+  const { getAllProducts, createProduct, updateProduct } = ProductAPI();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const productsData = await getAllProducts();
+    if(localStorage.getItem('@talphaToken') === null){
+      navigate("/login")
+    } else {
+      const fetchProducts = async () => {
+        try {
+          const productsData = await getAllProducts();
+  
+          setProducts(productsData.data);
+        } catch (error: any) {
+          console.error('Failed to fetch products:', error.message);
+        }
+      };
+  
+      fetchProducts();
+    }
 
-        setProducts(productsData.data);
-      } catch (error: any) {
-        console.error('Failed to fetch products:', error.message);
-      }
-    };
-
-    fetchProducts();
   }, []);
-
-  const navigate = useNavigate();
 
   const handleOpenEditModal = (product: IProduct) => {
     setCurrentEditProduct(product.id);
@@ -78,7 +82,6 @@ const Home = () => {
 
   async function addProduct(data: IProduct) {
     try {
-      console.log('entrou')
       await createProduct(data);
       navigate(0);
     } catch (error: any) {
@@ -86,11 +89,23 @@ const Home = () => {
     }
   };
 
+  async function editProduct(data: IProduct) {
+    console.log(currentEditProduct, data)
+    if(typeof(currentEditProduct) == 'number'){
+      try {
+        await updateProduct(data, currentEditProduct);
+        navigate(0);
+      } catch (error: any) {
+        console.error('Failed to create product:', error.message);
+      }
+    }
+  };
+
   const initialValuesAdd = {
     name: '',
     description: '',
-    price: undefined,
-    stock: undefined
+    price: 0,
+    stock: 0
   };
 
   const validationSchema = Yup.object({

@@ -1,4 +1,3 @@
-
 const ProductAPI = () => {
     const getAllProducts = async () => {
         try {
@@ -30,25 +29,25 @@ const ProductAPI = () => {
     };
     
     const createProduct = async (data: any) => {
-        console.log(data)
         try {
             const token = localStorage.getItem('@talphaToken');
 
             if (!token) {
-                console.log('deu ruim')
                 throw new Error('Authorization token not found');
             }
             
-            const registerUrl = 'https://interview.t-alpha.com.br/api/products/create-product';
+            const createProductUrl = 'https://interview.t-alpha.com.br/api/products/create-product';
     
             const requestOptions = {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json', // Especificar o tipo de conteúdo como JSON
                     Authorization: `Bearer ${token}`,
                 },
+                body: JSON.stringify(data),
             };
     
-            const response = await fetch(registerUrl, requestOptions);
+            const response = await fetch(createProductUrl, requestOptions);
     
             if (!response.ok) {
                 throw new Error(`Failed to create product: ${response.status} ${response.statusText}`);
@@ -61,9 +60,44 @@ const ProductAPI = () => {
             console.error('Create product error:', error.message);
             throw error;
         }
-      };
+    };
 
-    return {getAllProducts, createProduct}
+    const updateProduct = async (data: any, id: number) => {
+        console.log(data)
+        try {
+            const token = localStorage.getItem('@talphaToken');
+
+            if (!token) {
+                throw new Error('Authorization token not found');
+            }
+            
+            const createProductUrl = `https://interview.t-alpha.com.br/api/products/update-product/${id}`;
+    
+            const requestOptions = {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json', // Especificar o tipo de conteúdo como JSON
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(data),
+            };
+    
+            const response = await fetch(createProductUrl, requestOptions);
+    
+            if (!response.ok) {
+                throw new Error(`Failed to create product: ${response.status} ${response.statusText}`);
+            }
+    
+            const responseData = await response.json();
+        
+            return responseData;
+        } catch (error: any) {
+            console.error('Create product error:', error.message);
+            throw error;
+        }
+    };
+
+    return {getAllProducts, createProduct, updateProduct}
 }
 
 export default ProductAPI
