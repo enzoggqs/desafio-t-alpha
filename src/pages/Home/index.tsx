@@ -2,7 +2,7 @@ import { CalendarIcon } from '@chakra-ui/icons';
 import { Box, Button, Flex, ModalBody, ModalCloseButton, ModalHeader, Text, Tooltip } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { BiNews, BiSolidEdit, BiSolidTrash, BiUserCircle } from 'react-icons/bi';
+import { BiMoney, BiNews, BiSolidEdit, BiSolidTrash, BiUserCircle } from 'react-icons/bi';
 import { GoArrowLeft } from 'react-icons/go';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from "yup";
@@ -10,6 +10,7 @@ import CustomBox from '../../components/CustomBox';
 import CustomInput from '../../components/CustomInput';
 import CustomModal from '../../components/CustomModal';
 import ProductAPI from '../../services/ProductAPI';
+import useAuth from '../../services/useAuth';
 
 interface IProduct {
   id?: number;
@@ -37,6 +38,8 @@ const Home = () => {
   )
 
   const { getAllProducts, createProduct, updateProduct, deleteProduct } = ProductAPI();
+  const { signOut } = useAuth();
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -139,446 +142,461 @@ const Home = () => {
   });
 
   return (
-    <Flex
-      backgroundColor="#F0F1F3"
-      width="36%"
-      pt={"2rem"}
-      borderRadius="30px"
-      flexDirection="column"
-      alignItems="center"
-      boxShadow="dark-lg"
-    >
-      <Flex
-        justifyContent="space-between"
-        w="80%"
-      >
-        <GoArrowLeft
-          onClick={() => navigate(-1)}
-          cursor={"pointer"}
-          size={40}
-          color='#088395'
-        />
-        <Text
-          fontSize="2xl"
-          color="primary.500"
-          fontWeight="semibold"
-          pb=".5rem"
-        >
-          Produtos
-        </Text>
-        <Box width="40px" height="40px"></Box>
-      </Flex>
-      <Flex
-        height="50%"
-        width="80%"
-        flexDirection="column"
-        alignItems="flex-start"
-        justifyContent="flex-start"
-        mt="1rem"
-        overflowY="auto"
-        maxH="300px"
-        minH="100px"
-        marginBottom="2rem"
-        borderRadius="1rem"
-        px="1rem"
-        py="1rem"
-        sx={{
-          "&::-webkit-scrollbar": {
-            marginLeft: "1rem",
-            width: "4px",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "#f1f1f1",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#088395",
-            borderRadius: "4px",
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: "#0A4D68",
-          },
+    <>
+      <Button
+        pos="absolute" 
+        top="5%" 
+        right="5%"
+        cursor={"pointer"}
+        w={'3rem'}
+        backgroundColor={"#ffebee"}
+        onClick={() => {
+          signOut();
         }}
       >
-        {products.map((product, index) => (
-          <CustomBox
-            key={index}
-            text={product.name}
-            firstImage={
-              <BiSolidEdit
-                size={35}
-                color='#01875f'
-                cursor={"pointer"}
-                onClick={() => handleOpenEditModal(product)}
-              />
-            }
-            secondImage={
-              <BiSolidTrash
-                size={35}
-                color='#01875f'
-                cursor={"pointer"}
-                onClick={() => handleOpenDeleteModal(product)}
-              />
-            }
-          />
-        ))}
-      </Flex>
-      <Button
-        h="3rem"
-        w="70%"
-        borderRadius="30px"
-        borderColor="#E0E0E0"
-        borderWidth=".2rem"
-        color="#F0F1F3"
-        variant="solid"
-        backgroundColor="primary.500"
-        transition="background-color 0.3s, color 0.3s"
-        // _hover={{
-        //   backgroundColor: "primary.500",
-        //   color: "#F0F1F3",
-        // }}
-        mb="2rem"
-        fontSize="md"
-        onClick={handleOpenAddModal}
-      >
-        Adicionar Produto
+        Sair
       </Button>
-      {/* Modal de Edição */}
-      <CustomModal
-        isOpen={isOpenEditModal}
-        onClose={handleCloseEditModal}
-        initialRef={initialRef}
-        finalRef={finalRef}
+      <Flex
+        backgroundColor="#F0F1F3"
+        width="36%"
+        pt={"2rem"}
+        borderRadius="30px"
+        flexDirection="column"
+        alignItems="center"
+        boxShadow="dark-lg"
       >
-        <ModalHeader>
+        <Flex
+          justifyContent="space-between"
+          w="80%"
+        >
+          <GoArrowLeft
+            onClick={() => navigate(-1)}
+            cursor={"pointer"}
+            size={40}
+            color='#088395'
+          />
           <Text
             fontSize="2xl"
             color="primary.500"
             fontWeight="semibold"
             pb=".5rem"
           >
-            Editar Produto
+            Produtos
           </Text>
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Formik
-            initialValues={initialValuesEdit}
-            validationSchema={validationSchema}
-            onSubmit={(values) => editProduct(values)}
-          >
-            {({ handleSubmit, errors, touched, isValid, dirty }) => (
-              <Flex
-                as={Form}
-                width="100%"
-                flexDirection="column"
-                alignItems="center"
-              >
+          <Box width="40px" height="40px"></Box>
+        </Flex>
+        <Flex
+          height="50%"
+          width="80%"
+          flexDirection="column"
+          alignItems="flex-start"
+          justifyContent="flex-start"
+          mt="1rem"
+          overflowY="auto"
+          maxH="300px"
+          minH="100px"
+          marginBottom="2rem"
+          borderRadius="1rem"
+          px="1rem"
+          py="1rem"
+          sx={{
+            "&::-webkit-scrollbar": {
+              marginLeft: "1rem",
+              width: "4px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "#f1f1f1",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#088395",
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "#0A4D68",
+            },
+          }}
+        >
+          {products.map((product, index) => (
+            <CustomBox
+              key={index}
+              text={product.name}
+              firstImage={
+                <BiSolidEdit
+                  size={35}
+                  color='#01875f'
+                  cursor={"pointer"}
+                  onClick={() => handleOpenEditModal(product)}
+                />
+              }
+              secondImage={
+                <BiSolidTrash
+                  size={35}
+                  color='#01875f'
+                  cursor={"pointer"}
+                  onClick={() => handleOpenDeleteModal(product)}
+                />
+              }
+            />
+          ))}
+        </Flex>
+        <Button
+          h="3rem"
+          w="70%"
+          borderRadius="30px"
+          borderColor="#E0E0E0"
+          borderWidth=".2rem"
+          color="#F0F1F3"
+          variant="solid"
+          backgroundColor="primary.500"
+          transition="background-color 0.3s, color 0.3s"
+          // _hover={{
+          //   backgroundColor: "primary.500",
+          //   color: "#F0F1F3",
+          // }}
+          mb="2rem"
+          fontSize="md"
+          onClick={handleOpenAddModal}
+        >
+          Adicionar Produto
+        </Button>
+        {/* Modal de Edição */}
+        <CustomModal
+          isOpen={isOpenEditModal}
+          onClose={handleCloseEditModal}
+          initialRef={initialRef}
+          finalRef={finalRef}
+        >
+          <ModalHeader>
+            <Text
+              fontSize="2xl"
+              color="primary.500"
+              fontWeight="semibold"
+              pb=".5rem"
+            >
+              Editar Produto
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Formik
+              initialValues={initialValuesEdit}
+              validationSchema={validationSchema}
+              onSubmit={(values) => editProduct(values)}
+            >
+              {({ handleSubmit, errors, touched, isValid, dirty }) => (
                 <Flex
-                  height="50%"
-                  width="70%"
+                  as={Form}
+                  width="100%"
                   flexDirection="column"
-                  alignItems="flex-start"
-                  justifyContent="flex-start"
-                  mt="1rem"
-                  overflowY="auto"
-                  maxH="450px"
-                  marginBottom="2rem"
-                  px={2}
-                  sx={{
-                    "&::-webkit-scrollbar": {
-                      marginLeft: "1rem",
-                      width: "4px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "#f1f1f1",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      background: "#088395",
-                      borderRadius: "4px",
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      background: "#0A4D68",
-                    },
-                  }}
+                  alignItems="center"
                 >
-                  <CustomInput
-                    label="Nome"
-                    icon={<BiUserCircle className='custom-icon' />}
-                    name="name"
-                    type="text"
-                    placeholder="Digite o nome do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-
-                  <CustomInput
-                    label="Descrição"
-                    icon={<BiNews color='gray.500' className='custom-icon' />}
-                    name="description"
-                    type="text"
-                    placeholder="Digite a descrição do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-
-                  <CustomInput
-                    label="Preço"
-                    icon={<CalendarIcon className='custom-icon' color='gray.500' />}
-                    name="price"
-                    type="number"
-                    placeholder="Digite o preço do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-
-                  <CustomInput
-                    label="Estoque"
-                    icon={<CalendarIcon className='custom-icon' color='gray.500' />}
-                    name="stock"
-                    type="number"
-                    placeholder="Digite o número em estoque do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-                </Flex>
-                <Button
-                  type="submit"
-                  h="3rem"
-                  w="10rem"
-                  borderRadius="30px"
-                  borderColor="primary.500"
-                  borderWidth=".2rem"
-                  isDisabled={!isValid || !dirty}
-                  color="primary.500"
-                  variant="solid"
-                  marginTop="1rem"
-                  backgroundColor="transparent"
-                  transition="background-color 0.3s, color 0.3s"
-                  mb="1rem"
-                  fontSize="2xl"
-                >
-                  <Tooltip
-                    label="Você precisa alterar alguma informação"
-                    placement="top"
-                    hasArrow
-                    isOpen={dirty ? false : undefined}
+                  <Flex
+                    height="50%"
+                    width="70%"
+                    flexDirection="column"
+                    alignItems="flex-start"
+                    justifyContent="flex-start"
+                    mt="1rem"
+                    overflowY="auto"
+                    maxH="450px"
+                    marginBottom="2rem"
+                    px={2}
+                    sx={{
+                      "&::-webkit-scrollbar": {
+                        marginLeft: "1rem",
+                        width: "4px",
+                      },
+                      "&::-webkit-scrollbar-track": {
+                        background: "#f1f1f1",
+                      },
+                      "&::-webkit-scrollbar-thumb": {
+                        background: "#088395",
+                        borderRadius: "4px",
+                      },
+                      "&::-webkit-scrollbar-thumb:hover": {
+                        background: "#0A4D68",
+                      },
+                    }}
                   >
-                    Salvar
-                  </Tooltip>
-                </Button>
-              </Flex>
-            )}
-          </Formik>
-        </ModalBody>
-      </CustomModal>
-      {/* Modal de Adição */}
-      <CustomModal
-        isOpen={isOpenAddModal}
-        onClose={handleCloseAddModal}
-        initialRef={initialRef}
-        finalRef={finalRef}
-      >
-        <ModalHeader>
-          <Text
-            fontSize="2xl"
-            color="primary.500"
-            fontWeight="semibold"
-            pb=".5rem"
-          >
-            Adicionar Produto
-          </Text>
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Formik
-            initialValues={initialValuesAdd}
-            validationSchema={validationSchema}
-            onSubmit={(values) => addProduct(values)}
-          >
-            {({ handleSubmit, errors, touched, isValid, dirty }) => (
-              <Flex
-                as={Form}
-                width="100%"
-                flexDirection="column"
-                alignItems="center"
-              >
+                    <CustomInput
+                      label="Nome"
+                      icon={<BiUserCircle className='custom-icon' />}
+                      name="name"
+                      type="text"
+                      placeholder="Digite o nome do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+
+                    <CustomInput
+                      label="Descrição"
+                      icon={<BiNews color='gray.500' className='custom-icon' />}
+                      name="description"
+                      type="text"
+                      placeholder="Digite a descrição do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+
+                    <CustomInput
+                      label="Preço"
+                      icon={<BiMoney className='custom-icon' color='gray.500' />}
+                      name="price"
+                      type="number"
+                      placeholder="Digite o preço do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+
+                    <CustomInput
+                      label="Estoque"
+                      icon={<CalendarIcon className='custom-icon' color='gray.500' />}
+                      name="stock"
+                      type="number"
+                      placeholder="Digite o número em estoque do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+                  </Flex>
+                  <Button
+                    type="submit"
+                    h="3rem"
+                    w="10rem"
+                    borderRadius="30px"
+                    borderColor="primary.500"
+                    borderWidth=".2rem"
+                    isDisabled={!isValid || !dirty}
+                    color="primary.500"
+                    variant="solid"
+                    marginTop="1rem"
+                    backgroundColor="transparent"
+                    transition="background-color 0.3s, color 0.3s"
+                    mb="1rem"
+                    fontSize="2xl"
+                  >
+                    <Tooltip
+                      label="Você precisa alterar alguma informação"
+                      placement="top"
+                      hasArrow
+                      isOpen={dirty ? false : undefined}
+                    >
+                      Salvar
+                    </Tooltip>
+                  </Button>
+                </Flex>
+              )}
+            </Formik>
+          </ModalBody>
+        </CustomModal>
+        {/* Modal de Adição */}
+        <CustomModal
+          isOpen={isOpenAddModal}
+          onClose={handleCloseAddModal}
+          initialRef={initialRef}
+          finalRef={finalRef}
+        >
+          <ModalHeader>
+            <Text
+              fontSize="2xl"
+              color="primary.500"
+              fontWeight="semibold"
+              pb=".5rem"
+            >
+              Adicionar Produto
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Formik
+              initialValues={initialValuesAdd}
+              validationSchema={validationSchema}
+              onSubmit={(values) => addProduct(values)}
+            >
+              {({ handleSubmit, errors, touched, isValid, dirty }) => (
                 <Flex
-                  height="50%"
-                  width="70%"
+                  as={Form}
+                  width="100%"
                   flexDirection="column"
-                  alignItems="flex-start"
-                  justifyContent="flex-start"
-                  mt="1rem"
-                  overflowY="auto"
-                  maxH="450px"
-                  marginBottom="2rem"
-                  px={2}
-                  sx={{
-                    "&::-webkit-scrollbar": {
-                      marginLeft: "1rem",
-                      width: "4px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "#f1f1f1",
-                    },
-                    "&::-webkit-scrollbar-thumb": {
-                      background: "#088395",
-                      borderRadius: "4px",
-                    },
-                    "&::-webkit-scrollbar-thumb:hover": {
-                      background: "#0A4D68",
-                    },
-                  }}
+                  alignItems="center"
                 >
-                  <CustomInput
-                    label="Nome"
-                    icon={<BiUserCircle className='custom-icon' />}
-                    name="name"
-                    type="text"
-                    placeholder="Digite o nome do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-
-                  <CustomInput
-                    label="Descrição"
-                    icon={<BiNews color='gray.500' className='custom-icon' />}
-                    name="description"
-                    type="text"
-                    placeholder="Digite a descrição do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-
-                  <CustomInput
-                    label="Preço"
-                    icon={<CalendarIcon className='custom-icon' color='gray.500' />}
-                    name="price"
-                    type="number"
-                    placeholder="Digite o preço do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-
-                  <CustomInput
-                    label="Estoque"
-                    icon={<CalendarIcon className='custom-icon' color='gray.500' />}
-                    name="stock"
-                    type="number"
-                    placeholder="Digite o número em estoque do produto"
-                    height={'54px'}
-                    borderWidth=".2rem"
-                    borderRadius="30px"
-                    touched={touched}
-                    errors={errors}
-                  />
-
-                </Flex>
-                <Button
-                  type="submit"
-                  h="3rem"
-                  w="10rem"
-                  borderRadius="30px"
-                  borderColor="primary.500"
-                  borderWidth=".2rem"
-                  isDisabled={!isValid || !dirty}
-                  color="primary.500"
-                  variant="solid"
-                  marginTop="1rem"
-                  backgroundColor="transparent"
-                  transition="background-color 0.3s, color 0.3s"
-                  mb="1rem"
-                  fontSize="2xl"
-                >
-                  <Tooltip
-                    label="Você precisa alterar alguma informação"
-                    placement="top"
-                    hasArrow
-                    isOpen={dirty ? false : undefined}
+                  <Flex
+                    height="50%"
+                    width="70%"
+                    flexDirection="column"
+                    alignItems="flex-start"
+                    justifyContent="flex-start"
+                    mt="1rem"
+                    overflowY="auto"
+                    maxH="450px"
+                    marginBottom="2rem"
+                    px={2}
+                    sx={{
+                      "&::-webkit-scrollbar": {
+                        marginLeft: "1rem",
+                        width: "4px",
+                      },
+                      "&::-webkit-scrollbar-track": {
+                        background: "#f1f1f1",
+                      },
+                      "&::-webkit-scrollbar-thumb": {
+                        background: "#088395",
+                        borderRadius: "4px",
+                      },
+                      "&::-webkit-scrollbar-thumb:hover": {
+                        background: "#0A4D68",
+                      },
+                    }}
                   >
-                    Criar
-                  </Tooltip>
-                </Button>
-              </Flex>
-            )}
-          </Formik>
-        </ModalBody>
-      </CustomModal>
-      {/* Modal de Deleção */}
-      <CustomModal
-        isOpen={isOpenDeleteModal}
-        onClose={handleCloseDeleteModal}
-        initialRef={initialRef}
-        finalRef={finalRef}
-      >
-        <ModalHeader>
-          <Text
-            fontSize="2xl"
-            color="primary.500"
-            fontWeight="semibold"
-            pb=".5rem"
-          >
-            Deletar Produto
-          </Text>
-        </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-              <Flex
-                width="100%"
-                flexDirection="column"
-                alignItems="center"
-              >
-                <Text
-                  fontSize="xl"
-                  fontWeight="normal"
-                  pb=".5rem"
-                >
-                  Tem certeza que deseja excluir o produto {currentEditProduct !== undefined && products ? products.find(product => product.id === currentEditProduct)?.name : ""}
-                </Text>
+                    <CustomInput
+                      label="Nome"
+                      icon={<BiUserCircle className='custom-icon' />}
+                      name="name"
+                      type="text"
+                      placeholder="Digite o nome do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+
+                    <CustomInput
+                      label="Descrição"
+                      icon={<BiNews color='gray.500' className='custom-icon' />}
+                      name="description"
+                      type="text"
+                      placeholder="Digite a descrição do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+
+                    <CustomInput
+                      label="Preço"
+                      icon={<BiMoney className='custom-icon' color='gray.500' />}
+                      name="price"
+                      type="number"
+                      placeholder="Digite o preço do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+
+                    <CustomInput
+                      label="Estoque"
+                      icon={<CalendarIcon className='custom-icon' color='gray.500' />}
+                      name="stock"
+                      type="number"
+                      placeholder="Digite o número em estoque do produto"
+                      height={'54px'}
+                      borderWidth=".2rem"
+                      borderRadius="30px"
+                      touched={touched}
+                      errors={errors}
+                    />
+
+                  </Flex>
+                  <Button
+                    type="submit"
+                    h="3rem"
+                    w="10rem"
+                    borderRadius="30px"
+                    borderColor="primary.500"
+                    borderWidth=".2rem"
+                    isDisabled={!isValid || !dirty}
+                    color="primary.500"
+                    variant="solid"
+                    marginTop="1rem"
+                    backgroundColor="transparent"
+                    transition="background-color 0.3s, color 0.3s"
+                    mb="1rem"
+                    fontSize="2xl"
+                  >
+                    <Tooltip
+                      label="Você precisa alterar alguma informação"
+                      placement="top"
+                      hasArrow
+                      isOpen={dirty ? false : undefined}
+                    >
+                      Criar
+                    </Tooltip>
+                  </Button>
+                </Flex>
+              )}
+            </Formik>
+          </ModalBody>
+        </CustomModal>
+        {/* Modal de Deleção */}
+        <CustomModal
+          isOpen={isOpenDeleteModal}
+          onClose={handleCloseDeleteModal}
+          initialRef={initialRef}
+          finalRef={finalRef}
+        >
+          <ModalHeader>
+            <Text
+              fontSize="2xl"
+              color="primary.500"
+              fontWeight="semibold"
+              pb=".5rem"
+            >
+              Deletar Produto
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
                 <Flex
                   width="100%"
-                  flexDirection="row"
+                  flexDirection="column"
                   alignItems="center"
-                  justifyContent={"center"}
-                  py={"1rem"}
-                  gap={"3rem"}
                 >
-                  <Button
-                    onClick={() => removeProduct()}
+                  <Text
+                    fontSize="xl"
+                    fontWeight="normal"
+                    pb=".5rem"
                   >
-                    Sim
-                  </Button>
-                  <Button
-                    onClick={() => handleCloseDeleteModal()}
+                    Tem certeza que deseja excluir o produto {currentEditProduct !== undefined && products ? products.find(product => product.id === currentEditProduct)?.name : ""}
+                  </Text>
+                  <Flex
+                    width="100%"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent={"center"}
+                    py={"1rem"}
+                    gap={"3rem"}
                   >
-                    Não
-                  </Button>
+                    <Button
+                      onClick={() => removeProduct()}
+                    >
+                      Sim
+                    </Button>
+                    <Button
+                      onClick={() => handleCloseDeleteModal()}
+                    >
+                      Não
+                    </Button>
+                  </Flex>
                 </Flex>
-              </Flex>
-        </ModalBody>
-      </CustomModal>
-    </Flex>
+          </ModalBody>
+        </CustomModal>
+      </Flex>
+    </>
   );
 }
 
